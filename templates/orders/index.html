@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Список заказов</h1>
+<ul>
+    <h3><button type="button" onclick="location.href='{% url "create_order" %}'"> Создать заказ</button></h3>
+    {% if object_list %}
+{% for order in object_list %}
+    <h2><button type="button" onclick="location.href='{% url "order_details" order.id %}'"> Заказ #{{ order.id }}</button></h2>
+    <p>Стол: {{ order.table_number }}</p>
+    <p>Статус: {{ order.status }}</p>
+    <ul>
+        {% for item in order.item_set.all %}
+            <li>{{ item.item }} - {{ item.price }} руб.</li>
+        {% endfor %}
+    </ul>
+    <p>Общая стоимость: {{ order.total_price }} руб.</p>
+{% endfor %}
+    {% else %}
+    <h3>No orders yet</h3>
+    {% endif %}
+</ul>
+{% endblock %}

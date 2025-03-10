@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Заказ #{{ order.id }}</h1>
+<ul>
+    <p>Статус: {{ order.status }}</p>
+    <ul>
+        {% for item in order.item_set.all %}
+            <li>{{ item.item }} - {{ item.price }}</li>
+        {% endfor %}
+    </ul>
+    <p>Общая стоимость: {{ order.total_price }} руб.</p>
+    <button type="button" onclick="location.href='{% url "update_order" order.id %}'">Редактировать</button>
+    <button type="button" onclick="location.href='{% url "delete_order" order.id %}'">Удалить</button>
+    <button type="button" onclick="location.href='{% url "index" %}'">Отмена</button>
+</ul>
+{% endblock %}

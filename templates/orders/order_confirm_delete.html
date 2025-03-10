@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Удалить заказ</h3>
+<p>Вы действительно хотите удалить заказ #{{ object.id }}?</p>
+
+
+<form method="post">
+  {% csrf_token %}
+  <input value="Удалить" type="submit">
+  <input value="Отмена" type="button" onclick="location.href='{% url "index" %}'">
+</form>
+{% endblock %}
