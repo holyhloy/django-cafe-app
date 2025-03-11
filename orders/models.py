@@ -24,4 +24,4 @@ class Order(models.Model):
 class Item(models.Model):
     item = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=7, decimal_places=2, default=0.00)
-    order = models.ForeignKey('Order', on_delete=models.CASCADE)
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='items')

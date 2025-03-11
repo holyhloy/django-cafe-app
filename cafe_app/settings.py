@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'admin_interface',
     'colorfield',
+    'rest_framework',
     'orders',
     'django.contrib.admin',
     'django.contrib.auth',

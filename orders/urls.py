@@ -1,8 +1,15 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
 from .views import OrdersView, OrderDetailsView, OrderCreateView, OrderDeleteView, OrderUpdateView, OrderSearchView, \
-    RevenueView
+    RevenueView, OrderViewSet, ItemViewSet
+
+router = DefaultRouter()
+router.register(r'orders', OrderViewSet)
+router.register(r'items', ItemViewSet)
 
 urlpatterns = [
+path('api/', include(router.urls)),
 path('', OrdersView.as_view(), name='index'),
 path('order/<int:pk>', OrderDetailsView.as_view(), name='order_details'),
 path('create_order/', OrderCreateView.as_view(), name='create_order'),

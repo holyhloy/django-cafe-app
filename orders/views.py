@@ -4,9 +4,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import modelformset_factory
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View, DeleteView
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 
 from .models import Order, Item
 from .forms import OrderForm, ItemForm, OrderSearchForm, OrderEditForm
+from .serializers import OrderCreateSerializer, OrderRetrieveSerializer, ItemSerializer
 
 
 class OrdersView(ListView):
@@ -116,7 +119,7 @@ class OrderDeleteView(DeleteView):
     success_url = reverse_lazy('index')
 
     def get_queryset(self):
-        return Order.objects.prefetch_related('item_set').all()
+        return Order.objects.prefetch_related('items').all()
 
 
 class OrderSearchView(View):
@@ -166,3 +169,17 @@ class RevenueView(View):
             'average_bill': average_bill,
         }
         return render(request, self.template_name, context)
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.prefetch_related('items').all()
+
+    def get_serializer_class(self):
+        if self.request.method in ['POST', 'PUT', 'PATCH']:
+            return OrderCreateSerializer
+        return OrderRetrieveSerializer
+
+
+class ItemViewSet(viewsets.ModelViewSet):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
