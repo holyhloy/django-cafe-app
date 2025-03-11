@@ -16,7 +16,7 @@ class OrdersView(ListView):
     template_name = "orders/index.html"
 
     def get_queryset(self):
-        return Order.objects.prefetch_related('item_set').all()
+        return Order.objects.prefetch_related('items').all()
 
 
 class OrderDetailsView(ListView):
