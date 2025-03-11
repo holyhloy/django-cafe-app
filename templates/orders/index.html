@@ -6,6 +6,13 @@
         <button type="button" onclick="location.href='{% url "create_order" %}'"> Создать заказ</button>
         <button type="button" onclick="location.href='{% url "search_orders" %}'">Найти заказ</button>
         <button type="button" onclick="location.href='{% url "revenue" %}'"> Расчет выручки</button>
+        <label for="status-filter">Фильтр по статусу:</label>
+        <select id="status-filter" onchange="window.location.href='?status=' + this.value;">
+        <option value="all">Все заказы</option>
+        <option value="в ожидании" {% if request.GET.status == 'в ожидании' %}selected{% endif %}>В ожидании</option>
+        <option value="готов" {% if request.GET.status == 'готов' %}selected{% endif %}>Готов</option>
+        <option value="оплачен" {% if request.GET.status == 'оплачен' %}selected{% endif %}>Оплачен</option>
+        </select>
 </form>
 <ul>
     {% if object_list %}
@@ -21,7 +28,7 @@
     <p>Общая стоимость: {{ order.total_price }} руб.</p>
 {% endfor %}
     {% else %}
-    <h3>Активных заказов пока нет</h3>
+    <h3>Заказов пока нет</h3>
     {% endif %}
 </ul>
 {% endblock %}

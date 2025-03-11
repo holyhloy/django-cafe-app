@@ -6,7 +6,6 @@ from .views import OrdersView, OrderDetailsView, OrderCreateView, OrderDeleteVie
 
 router = DefaultRouter()
 router.register(r'orders', OrderViewSet)
-router.register(r'items', ItemViewSet)
 
 urlpatterns = [
 path('api/', include(router.urls)),

@@ -16,6 +16,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         fields = ['table_number', 'status', 'items']
 
     def create(self, validated_data):
+        """Функция для создания заказа в рамках API"""
         items_data = validated_data.pop('items')
         order = Order.objects.create(**validated_data)
 
@@ -29,6 +30,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         return order
 
     def update(self, instance, validated_data):
+        """Функция для редактирования заказа в рамках API"""
         items_data = validated_data.pop('items', [])
         instance.table_number = validated_data.get('table_number', instance.table_number)
         instance.status = validated_data.get('status', instance.status)
