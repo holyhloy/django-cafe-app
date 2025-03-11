@@ -21,7 +21,7 @@
     <p>Стол: {{ order.table_number }}</p>
     <p>Статус: {{ order.status }}</p>
     <ul>
-        {% for item in order.item_set.all %}
+        {% for item in order.items.all %}
             <li>{{ item.item }} - {{ item.price }} руб.</li>
         {% endfor %}
     </ul>
