@@ -18,7 +18,7 @@ class Order(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
-        return f'Стол {self.table_number}'
+        return f'Заказ {self.pk}'
 
 
 class Item(models.Model):

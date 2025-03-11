@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, View, DeleteView
 
 from .models import Order, Item
-from .forms import OrderForm, ItemForm
+from .forms import OrderForm, ItemForm, OrderSearchForm, OrderEditForm
 
 # Create your views here.
 class OrdersView(ListView):
@@ -75,7 +75,7 @@ class OrderUpdateView(View):
 
     def get(self, request, order_id, *args, **kwargs):
         order = get_object_or_404(Order, id=order_id)
-        order_form = OrderForm(instance=order)
+        order_form = OrderEditForm(instance=order)
         item_formset = self.ItemFormSet(queryset=Item.objects.filter(order=order))
         return render(request, 'orders/update_order.html', {
             'order_form': order_form,
@@ -85,7 +85,7 @@ class OrderUpdateView(View):
 
     def post(self, request, order_id, *args, **kwargs):
         order = get_object_or_404(Order, id=order_id)
-        order_form = OrderForm(request.POST, instance=order)
+        order_form = OrderEditForm(request.POST, instance=order)
         item_formset = self.ItemFormSet(request.POST, queryset=Item.objects.filter(order=order))
 
         if order_form.is_valid() and item_formset.is_valid():
@@ -116,3 +116,25 @@ class OrderDeleteView(DeleteView):
     def get_queryset(self):
         return Order.objects.prefetch_related('item_set').all()
 
+
+class OrderSearchView(View):
+    template_name = 'orders/search_orders.html'
+
+    def get(self, request):
+        form = OrderSearchForm(request.GET or None)
+        results = []
+
+        if form.is_valid():
+            order_id = form.cleaned_data.get('id')
+            status = form.cleaned_data.get('status')
+
+            # Фильтрация заказов по ID и статусу
+            filters = {}
+            if order_id:
+                filters['id'] = order_id
+            if status:
+                filters['status'] = status
+
+            results = Order.objects.filter(**filters)
+
+        return render(request, self.template_name, {'form': form, 'results': results})

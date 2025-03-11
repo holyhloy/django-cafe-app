@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Поиск заказов</h1>
+    <form method="GET" action="{% url 'search_orders' %}">
+        {{ form.as_p }}
+        <button type="submit">Поиск</button>
+        <button type="button" onclick="location.href='{% url "index" %}'">К списку заказов</button>
+    </form>
+
+{% if results %}
+    <h2>Результаты поиска:</h2>
+    <ul>
+        {% for order in results %}
+            <li>
+                <button type="button" onclick="location.href='{% url "order_details" order.id %}'">
+                    ID: {{ order.id }}, Статус: {{ order.status }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h2>Заказы не найдены.</h2>
+{% endif %}
+{% endblock %}

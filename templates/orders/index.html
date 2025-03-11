@@ -2,6 +2,10 @@
 
 {% block content %}
 <h1>Список заказов</h1>
+<form method="GET" action="{% url 'search_orders' %}">
+        {{ form.as_p }}
+        <button type="submit">Найти заказ</button>
+</form>
 <ul>
     <h3><button type="button" onclick="location.href='{% url "create_order" %}'"> Создать заказ</button></h3>
     {% if object_list %}
@@ -17,7 +21,7 @@
     <p>Общая стоимость: {{ order.total_price }} руб.</p>
 {% endfor %}
     {% else %}
-    <h3>No orders yet</h3>
+    <h3>Активных заказов пока нет</h3>
     {% endif %}
 </ul>
 {% endblock %}
