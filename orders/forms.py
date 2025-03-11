@@ -9,10 +9,12 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ['table_number']
 
+
 class OrderEditForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['status']
+
 
 class ItemForm(forms.ModelForm):
     class Meta:

@@ -1,4 +1,5 @@
 from django.core.exceptions import PermissionDenied
+from django.db.models import Sum, Count, Avg
 from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import modelformset_factory
 from django.urls import reverse_lazy
@@ -7,7 +8,7 @@ from django.views.generic import ListView, View, DeleteView
 from .models import Order, Item
 from .forms import OrderForm, ItemForm, OrderSearchForm, OrderEditForm
 
-# Create your views here.
+
 class OrdersView(ListView):
     template_name = "orders/index.html"
 
@@ -74,9 +75,11 @@ class OrderUpdateView(View):
     ItemFormSet = modelformset_factory(Item, form=ItemForm, extra=0)
 
     def get(self, request, order_id, *args, **kwargs):
+
         order = get_object_or_404(Order, id=order_id)
         order_form = OrderEditForm(instance=order)
         item_formset = self.ItemFormSet(queryset=Item.objects.filter(order=order))
+
         return render(request, 'orders/update_order.html', {
             'order_form': order_form,
             'item_formset': item_formset,
@@ -97,7 +100,6 @@ class OrderUpdateView(View):
                     total_price += item.price
                     item.order = order
                     item.save()
-
             order.total_price = total_price
             order.save()
             return redirect('index')
@@ -128,7 +130,6 @@ class OrderSearchView(View):
             order_id = form.cleaned_data.get('id')
             status = form.cleaned_data.get('status')
 
-            # Фильтрация заказов по ID и статусу
             filters = {}
             if order_id:
                 filters['id'] = order_id
@@ -138,3 +139,30 @@ class OrderSearchView(View):
             results = Order.objects.filter(**filters)
 
         return render(request, self.template_name, {'form': form, 'results': results})
+
+
+class RevenueView(View):
+    template_name = 'orders/revenue.html'
+
+    def get_total_revenue(self):
+        total_revenue = Order.objects.aggregate(total=Sum('total_price'))
+        return total_revenue['total'] if total_revenue['total'] else 0
+
+    def get_amount_of_orders(self):
+        amount_of_orders = Order.objects.aggregate(amount=Count('id'))
+        return amount_of_orders['amount'] if amount_of_orders['amount'] else 0
+
+    def get_average_bill(self):
+        average_bill = Order.objects.aggregate(avg=Avg('total_price', default=0))
+        return average_bill['avg'] if average_bill['avg'] else 0
+
+    def get(self, request, *args, **kwargs):
+        total_revenue = self.get_total_revenue()
+        amount_of_orders = self.get_amount_of_orders()
+        average_bill = round(self.get_average_bill(), 2)
+        context = {
+            'total_revenue': total_revenue,
+            'amount_of_orders': amount_of_orders,
+            'average_bill': average_bill,
+        }
+        return render(request, self.template_name, context)

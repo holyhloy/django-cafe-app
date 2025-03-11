@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Расчет выручки за смену</h1>
+<p>Количество заказов: {{ amount_of_orders }}</p>
+<p>Средний чек: {{ average_bill }} руб.</p>
+<p>Выручка за все заказы: {{ total_revenue }} руб.</p>
+<button type="button" onclick="location.href='{% url "index" %}'">К списку заказов</button>
+{% endblock %}

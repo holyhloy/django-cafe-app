@@ -2,12 +2,12 @@
 
 {% block content %}
 <h1>Список заказов</h1>
-<form method="GET" action="{% url 'search_orders' %}">
-        {{ form.as_p }}
-        <button type="submit">Найти заказ</button>
+<form>
+        <button type="button" onclick="location.href='{% url "create_order" %}'"> Создать заказ</button>
+        <button type="button" onclick="location.href='{% url "search_orders" %}'">Найти заказ</button>
+        <button type="button" onclick="location.href='{% url "revenue" %}'"> Расчет выручки</button>
 </form>
 <ul>
-    <h3><button type="button" onclick="location.href='{% url "create_order" %}'"> Создать заказ</button></h3>
     {% if object_list %}
 {% for order in object_list %}
     <h2><button type="button" onclick="location.href='{% url "order_details" order.id %}'"> Заказ #{{ order.id }}</button></h2>
