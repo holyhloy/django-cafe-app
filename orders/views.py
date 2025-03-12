@@ -239,8 +239,3 @@ class OrderViewSet(viewsets.ModelViewSet):
         if self.request.method in ['POST', 'PUT', 'PATCH']:
             return OrderCreateSerializer
         return OrderRetrieveSerializer
-
-
-class ItemViewSet(viewsets.ModelViewSet):
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
