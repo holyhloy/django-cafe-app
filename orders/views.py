@@ -2,10 +2,9 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Sum, Count, Avg
 from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import modelformset_factory
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, View, DeleteView
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from rest_framework import viewsets
 
 from .models import Order, Item
 from .forms import OrderForm, ItemForm, OrderSearchForm, OrderEditForm
@@ -97,7 +96,7 @@ class OrderCreateView(View):
 
 class OrderUpdateView(View):
 
-    ItemFormSet = modelformset_factory(Item, form=ItemForm, extra=0)
+    ItemFormSet = modelformset_factory(Item, form=ItemForm, extra=1)
 
     def get(self, request, order_id, *args, **kwargs):
         """Функция для отображения формы редактирования заказа
@@ -151,6 +150,22 @@ class OrderDeleteView(DeleteView):
         Order, а также Item с помощью метода prefetch_related."""
 
         return Order.objects.prefetch_related('items').all()
+
+
+class ItemDeleteView(DeleteView):
+    model = Item
+
+    def get_success_url(self):
+        """Функция определяет url для перехода в случае успешного удаления"""
+        order_id = self.object.order.id
+        return reverse('update_order', args=[order_id])
+
+    def get_queryset(self):
+        """Функция получает набор данных для отображения
+        и последующего удаления. Она возвращает объекты моделей
+        Order, а также Item с помощью метода prefetch_related."""
+        items = Item.objects.all()
+        return items
 
 
 class OrderSearchView(View):

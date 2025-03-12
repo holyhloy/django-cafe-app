@@ -9,27 +9,29 @@
     <div id="item-forms">
         {{ item_formset.management_form }}
         {% for form in item_formset %}
-            <div class="item-form">
+            <div class="item-form" id="item-form" data-form-id="{{ forloop.counter0 }}">
                 {{ form.as_p }}
+                <button type="button" onclick="deleteItem({{ form.instance.id|default:'null' }}, this)">Удалить блюдо</button>
             </div>
         {% endfor %}
+        <button type="button" id="add-form">Добавить блюдо</button>
     </div>
 
-    <button type="button" id="add-form">Добавить блюдо</button>
-    <button type="submit">Создать заказ</button>
+
+    <button type="submit">Сохранить заказ</button>
     <button type="button" onclick="location.href='{% url "index" %}'">Отмена</button>
 </form>
 
 <script>
 let itemForm = document.querySelectorAll(".item-form")
-let container = document.querySelector("#form-container")
+let container = document.querySelector("#item-forms")
 let addButton = document.querySelector("#add-form")
 let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
 
 let formNum = itemForm.length-1
 addButton.addEventListener('click', addForm)
 
-function addForm(e){
+function addForm(e) {
     e.preventDefault()
 
     let newForm = itemForm[0].cloneNode(true)
@@ -37,10 +39,57 @@ function addForm(e){
 
     formNum++
     newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
-    container.insertBefore(newForm, addButton)
+    newForm.setAttribute('data-form-id', formNum)
 
-    totalForms.setAttribute('value', `${formNum+1}`)
+
+    const inputs = newForm.querySelectorAll("input")
+    inputs.forEach(input => {
+        input.value = ''
+        })
+
+    const itemIdInput = newForm.querySelector("input[name='${formRegex}id']") // Замените 'item_id' на фактическое имя поля
+    if (itemIdInput) {
+        itemIdInput.value = ''
+    }
+
+    const deleteButton = newForm.querySelector("button[type='button']")
+    deleteButton.setAttribute('onclick', 'deleteItem(null, this)')
+
+    container.insertBefore(newForm, addButton)
+    totalForms.setAttribute('value', formNum + 1)
+}
+
+function deleteItemForm(button) {
+    const formContainer = button.closest('.item-form')
+    formContainer.remove() // Удаляем форму из DOM
+    updateTotalForms()
+}
+
+function deleteItem(itemId, button) {
+    if (itemId !== null && itemId !== undefined && itemId !== '') {
+        fetch(`/order/item/${itemId}/delete`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                const formContainer = button.closest('.item-form')
+                formContainer.remove()
+                updateTotalForms()
+            }
+        })
+    } else {
+        const formContainer = button.closest('.item-form');
+        formContainer.remove(); // Удаляем форму из DOM
+        updateTotalForms();
+    }
+}
+
+function updateTotalForms() {
+    const currentForms = document.querySelectorAll(".item-form");
+    totalForms.setAttribute('value', currentForms.length);
 }
 </script>
-
 {% endblock %}
