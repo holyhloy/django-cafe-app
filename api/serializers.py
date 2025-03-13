@@ -1,15 +1,19 @@
-from django.template.context_processors import request
 from rest_framework import serializers
-from .models import Order, Item
+from orders.models import Order, Item
 
 
-class ItemSerializer(serializers.ModelSerializer):
+class ItemCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['id', 'item', 'price']
+
+class ItemRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = ['item', 'price']
 
 class OrderCreateSerializer(serializers.ModelSerializer):
-    items = ItemSerializer(many=True, required=False)
+    items = ItemRetrieveSerializer(many=True, required=False)
 
     class Meta:
         model = Order
@@ -63,7 +67,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
 
 class OrderRetrieveSerializer(serializers.ModelSerializer):
-    items = ItemSerializer(many=True, required=False)
+    items = ItemCreateSerializer(many=True, required=False)
 
     class Meta:
         model = Order

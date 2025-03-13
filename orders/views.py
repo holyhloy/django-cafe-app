@@ -4,11 +4,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import modelformset_factory
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, View, DeleteView
-from rest_framework import viewsets
 
 from .models import Order, Item
 from .forms import OrderForm, ItemForm, OrderSearchForm, OrderEditForm
-from .serializers import OrderCreateSerializer, OrderRetrieveSerializer, ItemSerializer
 
 
 class OrdersView(ListView):
@@ -226,16 +224,3 @@ class RevenueView(View):
             'average_bill': average_bill,
         }
         return render(request, self.template_name, context)
-
-
-class OrderViewSet(viewsets.ModelViewSet):
-
-    queryset = Order.objects.prefetch_related('items').all()
-
-    def get_serializer_class(self):
-        """Функция получает метод из запроса и
-        возвращает Serializer для создания или
-        отображения заказов"""
-        if self.request.method in ['POST', 'PUT', 'PATCH']:
-            return OrderCreateSerializer
-        return OrderRetrieveSerializer
